@@ -863,8 +863,12 @@ define([
             return vertexShaderSource;
         }
 
-        var str = 'vec4 p = czm_computePosition();\n    p = p + vec4(czm_batchTable_offset(batchId), 0.0);';
-        return vertexShaderSource.replace(/vec4\s+p\s+=\s+czm_computePosition\(\);/g, str);
+        var attr = 'attribute float batchId;\nattribute float applyOffset;';
+        var modifiedShader = vertexShaderSource.replace(/attribute\s+float\s+batchId;/g, attr);
+
+        var str = 'vec4 p = czm_computePosition();\n    p = p + vec4(czm_batchTable_offset(batchId) * applyOffset, 0.0);';
+        modifiedShader = modifiedShader.replace(/vec4\s+p\s+=\s+czm_computePosition\(\);/g, str);
+        return modifiedShader;
     };
 
     Primitive._appendDistanceDisplayConditionToShader = function(primitive, vertexShaderSource, scene3DOnly) {
