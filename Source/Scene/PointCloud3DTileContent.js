@@ -1,4 +1,5 @@
 define([
+        '../Core/arraySlice',
         '../Core/Cartesian2',
         '../Core/Cartesian3',
         '../Core/Cartesian4',
@@ -40,6 +41,7 @@ define([
         './SceneMode',
         './ShadowMode'
     ], function(
+        arraySlice,
         Cartesian2,
         Cartesian3,
         Cartesian4,
@@ -343,6 +345,18 @@ define([
 
         if (!defined(pointsLength)) {
             throw new RuntimeError('Feature table global property: POINTS_LENGTH must be defined');
+        }
+
+        var draco = featureTable.getGlobalProperty('DRACO');
+        if (defined(draco)) {
+            var dracoSemantics = draco.semantics;
+            var dracoByteOffset = draco.byteOffset;
+            var dracoByteLength = draco.byteLength;
+            if (!defined(dracoSemantics) || !defined(dracoByteOffset) || !defined(dracoByteLength)) {
+                throw new RuntimeError('DRACO.semantics, DRACO.byteOffset, and DRACO.byteLength must be defined');
+            }
+            var dracoBuffer = arraySlice(featureTableBinary, dracoByteOffset, dracoByteLength);
+
         }
 
         // Get the positions
